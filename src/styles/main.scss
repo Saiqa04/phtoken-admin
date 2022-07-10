@@ -1,0 +1,33 @@
+@import '../styles/theme.scss';
+
+* {
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+
+    .side-wrapper {
+        width: 260px;
+        background-color: $navColor;
+        color: $whiteColor;
+        height: 100%;
+        position: fixed;
+    }
+
+    .main-wrapper {
+        flex: auto;
+        margin-left: 260px;
+        background-color: $whiteColor;
+
+        .content-section {
+            margin: 0px 40px;
+        }
+    }
+}

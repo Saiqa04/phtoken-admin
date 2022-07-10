@@ -1,0 +1,101 @@
+@import '../../styles/theme.scss';
+
+.dashboard-container {
+    .box-wrapper {
+        display: flex;
+    }
+
+    .table-wrapper {
+        width: 70%;
+        border-radius: 10px;
+        table {
+            width: 100%;
+            box-shadow: 1px 1px 8px 1px rgb(204, 204, 204);
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            tr {
+                outline: none;
+                border-bottom: 1px solid #bebebe;
+                th {
+                    font-weight: 600;
+                    font-size: 13px;
+                    padding: 15px 17px;
+                    text-align: left;
+                    text-transform: uppercase;
+                    border-bottom: 1px solid #bebebe;
+                    &:not(:first-child){
+                        font-weight: 400; 
+                        font-size: 12px;
+                    }
+                }
+                td {
+                    padding: 12px 17px;
+                    font-size: 13px;
+                    text-align: left;
+                    width: calc(100% / 6);
+                    white-space: nowrap;
+                    overflow: hidden;
+                    
+                    button {
+                        cursor: pointer;
+                        outline: none;
+                        background-color: transparent;
+                        border: 0;
+                        color: blue;
+                        text-decoration: underline;
+                    };
+                }
+                &:hover {
+                    background-color: rgb(233, 254, 255);
+                }
+                
+            }
+        }
+    }
+    .table-wrapper , .form-wrapper {
+        margin-top: 25px;
+    }
+
+    .form-wrapper {
+        flex: auto;
+        box-shadow: 1px 1px 8px 1px rgb(204, 204, 204);
+        padding: 5px 10px 5px 5px;
+        margin-left: 20px;
+        border-radius: 5px;
+
+        .label-text {
+            text-align: center;
+            background-color: rgb(18, 243, 213);
+            padding: 10px;
+            border-radius: 5px;
+            color: $whiteColor;
+            font-size: 13px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            margin-top: 10px;
+            flex-direction: row;
+            label {
+                margin-right: 5px;
+                padding: 4px 10px;
+            }
+            input, select, textarea, button {
+                width: 100%;
+                margin: 0 5px;
+                font-size: 12px;
+                outline: none;
+                padding: 10px 8px;
+                border-radius: 5px;
+                border: 1px solid rgb(18, 243, 213);
+            }
+            button {
+                text-transform: uppercase;
+                background-color: rgb(18, 243, 213);
+                color: $whiteColor;
+                cursor: pointer;
+            }
+        }
+        
+    }
+}
