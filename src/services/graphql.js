@@ -134,7 +134,7 @@ export const GET_COUNTS = gql`
     }
 `;
 
-export const GET_PENDING_RESERVATIONS = gql`
+export const GET_RESERVATIONS = gql`
     query GetReservations($status: String!) {
         Reservations(Status: $status) {
             Number

@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import React, { useEffect, useState } from "react";
 import MessageSnackBar from "../../popups/MessageSnackBar";
-import { CREATE_BANNER_AD, CREATE_PROMOTION, GET_PENDING_RESERVATIONS } from "../../services/graphql";
+import { CREATE_BANNER_AD, CREATE_PROMOTION, GET_RESERVATIONS } from "../../services/graphql";
 
 require('./reservation-component.scss');
 
@@ -52,13 +52,10 @@ export default function Reservations() {
     const [selectedRow, setSelectedRow] = useState(InitialSelectedRowValues)
     const [values, setValues] = useState(InitialBannerFormValues)
     const [promoValues, setPromoValues] = useState(InitialPromoFormValues)
-    const {loading, data} = useQuery(GET_PENDING_RESERVATIONS, {
-        variables:{
-            status: "Pending"
-        }
-    })
+    const [GetReservations, {loading, data}] = useLazyQuery(GET_RESERVATIONS)
+
     const [createBannerAd] = useMutation(CREATE_BANNER_AD, {
-        refetchQueries: [GET_PENDING_RESERVATIONS],
+        refetchQueries: [GET_RESERVATIONS],
         onCompleted: () => {
             setSnackBar({
                 type: "success",
@@ -80,7 +77,7 @@ export default function Reservations() {
         }
     });
     const [createPromotion] = useMutation(CREATE_PROMOTION, {
-        refetchQueries: [GET_PENDING_RESERVATIONS],
+        refetchQueries: [GET_RESERVATIONS],
         onCompleted: () => {
             setSnackBar({
                 type: "success",
@@ -181,15 +178,33 @@ export default function Reservations() {
             }
         })
     }
+
+    useEffect(() => {
+        GetReservations({
+            variables: {
+                status: "Pending"
+            }
+        })
+    },[])
     return(
         <div className="reservation-container">
                  <MessageSnackBar open={snackBar.open} type={snackBar.type} close={handleCloseSnackbar} message={snackBar.message}/>
+            <button className="btn" onClick={() => GetReservations({
+                variables: {
+                    status: "Pending"
+                }
+            })}>Pending</button>
+             <button className="btn" onClick={() => GetReservations({
+                variables: {
+                    status: "Paid"
+                }
+            })}>Paid</button>
             <div className="box-wrapper">
                 <div className="table-wrapper">
                         <table className="pending">
                             <thead>
                                 <tr>
-                                    <th>Pending</th>
+                                    <th>Number</th>
                                     <th>Type</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
@@ -210,9 +225,10 @@ export default function Reservations() {
                                     <td>{row.AmountToPay}</td>
                                     <td>{row.Discount}</td>
                                     <td>{row.PaymentStatus}</td>
-                                    <td><button onClick={() => handleRowSelect(row)}>Select</button></td>
+                                    <td><button disabled={row.PaymentStatus === "Paid"} 
+                                    onClick={() => handleRowSelect(row)}>Select</button></td>
                                 </tr>
-                            )}
+                                )}
                             </tbody>
                         </table>
                 </div>
@@ -225,31 +241,31 @@ export default function Reservations() {
                             //Create Promotion Form
                             <>
                                 <div className="input-wrapper">
-                                    <label>Coin ID</label>
+                                    <label>Coin ID <span>(required)</span></label>
                                     <input type="text" name="CoinID" value={promoValues.CoinID} 
                                         onChange={handlePromoInputOnChange}/>
                                 </div>
                                 <div style={{display: 'flex'}}>
                                     <div className="input-wrapper">
-                                        <label>Start Date <span>(Readonly)</span></label>
+                                        <label>Start Date</label>
                                         <input type="text" name="StartDate" readOnly={true} value={selectedRow.StartDate} 
                                             onChange={handlePromoInputOnChange}
                                             placeholder="Contract Address"/>
                                     </div>
                                     <div className="input-wrapper">
-                                        <label>End Date <span>(Readonly)</span></label>
+                                        <label>End Date</label>
                                         <input type="text" name="EndDate" readOnly={true} value={selectedRow.EndDate}
                                             onChange={handlePromoInputOnChange}
                                             placeholder="e.g https://t.me/user"/>
                                     </div>
                             </div>
                             <div className="input-wrapper">
-                                <label>Txn Hash <span>(Payment Proof)</span></label>
+                                <label>Txn Hash <span>(required)</span></label>
                                 <input type="text" name="TxnHash" value={promoValues.TxnHash} 
                                     onChange={handlePromoInputOnChange}/>
                             </div>
                             <div className="input-wrapper">
-                                <label>Memo <span>(Pin Message)</span></label>
+                                <label>Memo</label>
                                 <input type="text" name="Memo" value={promoValues.Memo} 
                                     onChange={handlePromoInputOnChange}/>
                             </div>
@@ -268,13 +284,13 @@ export default function Reservations() {
                             <>
                             <div style={{display: 'flex'}}>
                                 <div className="input-wrapper">
-                                    <label>Number <span>(Readonly)</span></label>
+                                    <label>Number <span>(required)</span></label>
                                     <input type="text" name="Number" readOnly={true} value={selectedRow.Number} 
                                         onChange={handleInputOnChange}
                                         placeholder="Contract Address"/>
                                 </div>
                                 <div className="input-wrapper">
-                                    <label>Contact <span>(Readonly)</span></label>
+                                    <label>Contact <span>(required)</span></label>
                                     <input type="text" name="Telegram" readOnly={true} value={selectedRow.Telegram}
                                         onChange={handleInputOnChange}
                                         placeholder="e.g https://t.me/user"/>
@@ -282,7 +298,7 @@ export default function Reservations() {
                             </div>
                             <div style={{display: 'flex'}}>
                                 <div className="input-wrapper">
-                                    <label>Telegram (Community)</label>
+                                    <label>Telegram (Community) <span>(required)</span></label>
                                     <input type="text" name="CommunityTG" value={values.CommunityTG}
                                         onChange={handleInputOnChange}/>
                                 </div>
@@ -299,28 +315,28 @@ export default function Reservations() {
                                         onChange={handleInputOnChange}/>
                                 </div>
                                 <div className="input-wrapper">
-                                    <label>Banner Name</label>
+                                    <label>Banner Name <span>(required)</span></label>
                                     <input type="text" name="BannerName" value={values.BannerName}
                                         onChange={handleInputOnChange}/>
                                 </div>
                             </div>
                             <div className="input-wrapper">
-                                <label>Txn Hash <span>(Payment Proof)</span></label>
+                                <label>Txn Hash <span>(required)</span></label>
                                 <input type="text" name="TxnHash" value={values.TxnHash} 
                                     onChange={handleInputOnChange}/>
                             </div>
                             <div className="input-wrapper">
-                                <label>Memo <span>(Pin Message)</span></label>
+                                <label>Memo</label>
                                 <input type="text" name="Memo" value={values.Memo} 
                                     onChange={handleInputOnChange}/>
                             </div>
                             <div className="input-wrapper">
-                                <label>Description</label>
+                                <label>Description <span>(required)</span></label>
                                 <textarea rows={3} type="text" name="Description" value={values.Description}
                                     onChange={handleInputOnChange}/>
                             </div>
                             <div className="input-wrapper">
-                                <label>Banner URL</label>
+                                <label>Banner URL <span>(required)</span></label>
                                 <input type="text" name="ImageLocation" value={values.ImageLocation}
                                     onChange={handleInputOnChange}
                                     placeholder="e.g https://example.com/sample/banner.gif"/>

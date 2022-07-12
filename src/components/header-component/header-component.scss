@@ -12,6 +12,17 @@
                 opacity: 80%;
             }
         }
+
+        button {
+            float: right;
+            background-color:  rgb(7, 201, 201);
+            border-radius: 5px;
+            border: 1px solid rgb(75, 75, 75);
+            font-size: 12px;
+            padding: 3px 8px;
+            color: white;
+            cursor: pointer;
+        }
     }
 
     .location-path {
